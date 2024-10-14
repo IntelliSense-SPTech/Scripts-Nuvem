@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Função para imprimir mensagens em destaque
+function echo_highlight {
+    echo -e "\n\e[1;32m************ $1 ************\e[0m\n"
+}
+
+# Variáveis
+PROJECT_DIR="$HOME/meu_projeto"            # Diretório do projeto
+DOCKER_IMAGE_NAME="intellisense/imagem-backend:latest"  # Nome da imagem Docker
+REPO_URL_FRONT="https://github.com/IntelliSense-SPTech/Front-End.git"  # URL do repositório do FRONT
+REPO_URL_BACK="https://github.com/IntelliSense-SPTech/Back-End.git"  # URL do repositório do BACK
+DIR="$HOME/IntelliSense"                  # Diretório onde o repositório será baixado
+API_DIR="$DIR/Back-End"                   # Diretório da API para executar o Docker Compose
+
+# Passo 1: Update e Upgrade do sistema
+echo_highlight "Atualizando o sistema"
+sudo apt update && sudo apt upgrade -y
+
+# Passo 2: Verificar versão do Java
+echo_highlight "Verificando Java"
+if ! [ -x "$(command -v java)" ]; then
+  echo "Java não está instalado. Instalando Java..."
+  sudo apt install -y default-jdk
+else
+  echo "Java está instalado:"
+  java -version
+fi
+
+# Passo 3: Instalar Docker
+echo_highlight "Verificando Docker"
+if ! [ -x "$(command -v docker)" ]; then
+  echo "Docker não está instalado. Instalando Docker..."
+  sudo apt install -y docker.io
+else
+  echo "Docker já está instalado."
+fi
+
+# Passo 4: Verificar se a imagem Docker já está disponível
+echo_highlight "Verificando a imagem Docker"
+if [[ "$(docker images -q $DOCKER_IMAGE_NAME 2> /dev/null)" == "" ]]; then
+  echo "Imagem Docker não encontrada. Baixando a imagem..."
+  docker pull $DOCKER_IMAGE_NAME
+else
+  echo "Imagem Docker já está disponível."
+fi
+
+# Passo 5: Verificar se o projeto está baixado
+echo_highlight "Verificando o projeto"
+if [ -d "$PROJECT_DIR" ]; then
+  echo "Projeto já está baixado no diretório $PROJECT_DIR."
+else
+  echo "Projeto não encontrado no diretório $PROJECT_DIR. Baixando o repositório..."
+  git clone $REPO_URL_FRONT "$DIR/Front-End"
+  git clone $REPO_URL_BACK "$DIR/Back-End"
+fi
+
+# Passo 6: Executar a API do grupo de PI
+echo_highlight "Executando a API do grupo de PI"
+cd $API_DIR
+if [ -f "docker-compose.yml" ]; then
+  docker-compose up -d  # Executa via Docker Compose se disponível
+else
+  # Executa a imagem Docker diretamente
+  docker run -d -p 8080:8080 $DOCKER_IMAGE_NAME
+fi
