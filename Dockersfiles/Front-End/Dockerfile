@@ -1,8 +1,18 @@
-# Usamos uma imagem oficial do Node.js como base
+# Imagem oficial do Node.js como base
 FROM node:16
 
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /home
+
+# Variáveis de ambiente para o banco de dados
+ENV MYSQL_ROOT_PASSWORD=123456
+ENV DB_USERNAME=intellisense
+ENV DB_URL=jdbc:mysql://localhost:3306/intellisense
+ENV MYSQL_DATABASE=intellisense
+ENV MYSQL_PASSWORD=123456
+
+# Variáveis para o Java
+ENV API_URL=http://localhost:8080
 
 # Clona o repositório do GitHub se não existir, caso contrário, faz git pull
 RUN if [ ! -d "Front-End" ]; then \
