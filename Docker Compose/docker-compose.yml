@@ -2,16 +2,15 @@ version: '3.8'
 
 services:
   mysql:
-    build:
-      context: ./banco-dados
-      dockerfile: Dockerfile
+    image: mysql:5.7
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: intellisense
       MYSQL_USER: intellisense
       MYSQL_PASSWORD: 123456
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./init-scripts:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
 
@@ -25,13 +24,14 @@ services:
       DB_URL: jdbc:mysql://mysql:3306/intellisense
       MYSQL_DATABASE: intellisense
       MYSQL_PASSWORD: 123456
+    depends_on:
+      - mysql
     ports:
       - "8080:8080"
 
   frontend:
-    build:
-      context: ./front-end
-      dockerfile: Dockerfile
+    image: giovannagomes/intellisense_front_end:1.0
+    restart: always
     environment:
       DB_USERNAME: intellisense
       DB_URL: jdbc:mysql://mysql:3306/intellisense
