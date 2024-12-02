@@ -1,22 +1,21 @@
-version: '3.8'
-
 services:
   mysql:
-    image: mysql:5.7
-    restart: always
+    build:
+      context: ./bd
+      dockerfile: Dockerfile
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: intellisense
       MYSQL_USER: intellisense
       MYSQL_PASSWORD: 123456
     volumes:
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
 
-  backend:
+  java:
     build:
-      context: ./back-end
+      context: ./backend
       dockerfile: Dockerfile
     environment:
       MYSQL_ROOT_PASSWORD: 123456
@@ -35,9 +34,9 @@ services:
     environment:
       DB_USERNAME: intellisense
       DB_URL: jdbc:mysql://mysql:3306/intellisense
-      API_URL: http://backend:8080
+      API_URL: http://java:8080
     depends_on:
-      - backend
+      - java
     ports:
       - "3333:3333"
 

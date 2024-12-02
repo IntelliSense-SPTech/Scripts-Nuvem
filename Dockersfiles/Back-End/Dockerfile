@@ -4,17 +4,18 @@ FROM openjdk:21-jdk-slim
 # Diretório de trabalho dentro do contêiner
 WORKDIR /home
 
-# Variáveis de ambiente para o banco de dados
-ENV MYSQL_ROOT_PASSWORD=123456
-ENV DB_USERNAME=intellisense
-ENV DB_URL=jdbc:mysql://localhost:3306/intellisense
-ENV DB_PASSWORD=123456
+# Variáveis de ambiente para o banco de dados (configuradas fora do Dockerfile)
+ENV MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+ENV DB_USERNAME=${DB_USERNAME}
+ENV DB_URL=${DB_URL}
+ENV DB_PASSWORD=${DB_PASSWORD}
 
-# Variáveis de ambiente adicionais
+# Variáveis de ambiente adicionais (configuradas fora do Dockerfile)
 ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
 ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 ENV AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
-ENV S3_BUCKET_NAME=grupointellisense
+ENV S3_BUCKET_NAME=${S3_BUCKET_NAME}
+ENV TOKEN_SLACK=${TOKEN_SLACK}
 
 # Instala o Git e o Maven
 RUN apt-get update && \
